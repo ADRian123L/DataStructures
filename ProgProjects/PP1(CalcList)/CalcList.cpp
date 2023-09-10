@@ -51,23 +51,27 @@ void CalcList::newOperation(const FUNCTIONS func, const double operand) {
         std::cout << "Memory allocation failed: " << e.what() << std::endl;
     }
 
-    switch (func) {
-    case ADDITION: {
-        this->totalSum += operand;
-        break;
-    }
-    case SUBTRACTION: {
-        this->totalSum -= operand;
-        break;
-    }
-    case MULTIPLICATION: {
-        this->totalSum *= operand;
-        break;
-    }
-    case DIVISION: {
-        this->totalSum /= operand;
-        break;
-    }
+    try {
+        switch (func) {
+        case ADDITION: {
+            this->totalSum += operand;
+            break;
+        }
+        case SUBTRACTION: {
+            this->totalSum -= operand;
+            break;
+        }
+        case MULTIPLICATION: {
+            this->totalSum *= operand;
+            break;
+        }
+        case DIVISION: {
+            this->totalSum /= operand;
+            break;
+        }
+        }
+    } catch (const std::invalid_argument &e) {
+        std::cout << "Error in calculation: " << e.what() << std::endl;
     }
 }
 
