@@ -85,6 +85,9 @@ void CalcList::removeLastOperation() {
         delete ptr;
         --(this->numNode);
     }
+    else {
+        throw std::out_of_range("The linked list is empty");
+    }
 }
 
 std::string CalcList::toString(unsigned short precision) const {
