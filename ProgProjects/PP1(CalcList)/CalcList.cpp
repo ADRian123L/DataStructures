@@ -1,50 +1,34 @@
-#include "CalcListInterface.hpp"
+#include "CalcList.hpp"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-class CalcList : public CalcListInterface {
-private:
-    // Class for the linked list:
-    class Node {
-    public:
-        double    rightOperand;
-        double    leftOperand;
-        FUNCTIONS funct;
-        Node     *next;
-        Node(double Leftval, double Rightval, FUNCTIONS func, Node *ptr)
-            : rightOperand(Rightval), leftOperand(Leftval), funct(func),
-              next(ptr) {}
-
-        std::string oper() {
-            switch (funct) {
-            case ADDITION: {
-                return std::string("+");
-            }
-            case SUBTRACTION: {
-                return std::string("-");
-            }
-            case MULTIPLICATION: {
-                return std::string("*");
-            }
-            case DIVISION: {
-                return std::string("/");
-            }
-            };
-        }
-    };
-
-    // Declaring and initializing the main variables:
-    double totalSum = 0.0;
-    Node  *head     = nullptr;
-    size_t numNode  = 0;
-
+class CalcList::Node {
 public:
-    double total() const override;
-    void   newOperation(const FUNCTIONS func, const double operand) override;
-    void   removeLastOperation() override;
-    std::string toString(unsigned short precision) const override;
-    ~CalcList();
+    double    rightOperand;
+    double    leftOperand;
+    FUNCTIONS funct;
+    Node     *next;
+    Node(double Leftval, double Rightval, FUNCTIONS func, Node *ptr)
+        : rightOperand(Rightval), leftOperand(Leftval), funct(func), next(ptr) {
+    }
+
+    std::string oper() {
+        switch (funct) {
+        case ADDITION: {
+            return std::string("+");
+        }
+        case SUBTRACTION: {
+            return std::string("-");
+        }
+        case MULTIPLICATION: {
+            return std::string("*");
+        }
+        case DIVISION: {
+            return std::string("/");
+        }
+        };
+    }
 };
 
 CalcList::~CalcList() {

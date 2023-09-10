@@ -6,33 +6,7 @@
 class CalcList : public CalcListInterface {
 private:
     // Class for the linked list:
-    class Node {
-    public:
-        double    rightOperand;
-        double    leftOperand;
-        FUNCTIONS funct;
-        Node     *next;
-        Node(double Leftval, double Rightval, FUNCTIONS func, Node *ptr)
-            : rightOperand(Rightval), leftOperand(Leftval), funct(func),
-              next(ptr) {}
-
-        std::string oper() {
-            switch (funct) {
-            case ADDITION: {
-                return std::string("+");
-            }
-            case SUBTRACTION: {
-                return std::string("-");
-            }
-            case MULTIPLICATION: {
-                return std::string("*");
-            }
-            case DIVISION: {
-                return std::string("/");
-            }
-            };
-        }
-    };
+    class Node;
 
     // Declaring and initializing the main variables:
     double totalSum = 0.0;
