@@ -18,6 +18,7 @@ public:
     void   newOperation(const FUNCTIONS func, const double operand) override;
     void   removeLastOperation() override;
     std::string toString(unsigned short precision) const override;
+    /* Deallocates the memory from the heap.*/
     ~CalcList();
 };
 
