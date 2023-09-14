@@ -31,6 +31,9 @@ public:
         case DIVISION: {
             return std::string("/");
         }
+        default: {
+            throw std::invalid_argument("The operator is not valid");
+        }
         };
     }
 };
