@@ -3,17 +3,14 @@
 #include <stdexcept>
 #include <string>
 
-// Check if a given character is a letter.
 bool isLetter(char letter) {
     return (letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z');
 }
 
-// Check if a given character is an operator.
 bool isOperator(char oper) {
     return oper == '+' || oper == '-' || oper == '*' || oper == '/';
 }
 
-// Get the precedence level of an operator outside the stack.
 int precedence_out(char oper) {
     switch (oper) {
     case '+':
@@ -29,7 +26,6 @@ int precedence_out(char oper) {
     }
 }
 
-// Get the precedence level of an operator inside the stack.
 int precedence_in(char oper) {
     switch (oper) {
     case '+':
@@ -45,39 +41,34 @@ int precedence_in(char oper) {
     }
 }
 
-// Convert Postfix notation to Infix notation.
 std::string NotationConverter::postfixToInfix(std::string inStr) {
     Deque<std::string> stack;
     for (char &ch : inStr) {
         if (isLetter(ch)) {
-            std::string temp(1, ch);
-            stack.insertBack(temp);
+            stack.insertBack(std::string(1, ch));
         }
         else if (isOperator(ch)) {
             std::string op2 = stack.back();
             stack.eraseBack();
             std::string op1 = stack.back();
             stack.eraseBack();
-            std::string combined = "(" + op1 + ch + op2 + ")";
-            stack.insertBack(combined);
+            stack.insertBack("(" + op1 + " " + ch + " " + op2 + ")");
         }
     }
     return stack.back();
 }
 
-// Convert Infix notation to Postfix notation.
 std::string NotationConverter::infixToPostfix(std::string inStr) {
-    // Declare the deque for the operations and the resulting postfix string:
     Deque<char> operators;
     std::string postfix;
-    // Conversion:
+
     for (char &ch : inStr) {
         if (isLetter(ch)) {
             postfix += ch;
         }
         else if (isOperator(ch)) {
             while (!operators.isEmpty() &&
-                   precedence_out(operators.back()) >= precedence_in(ch)) {
+                   precedence_out(ch) <= precedence_in(operators.back())) {
                 postfix += operators.back();
                 operators.eraseBack();
             }
@@ -91,41 +82,37 @@ std::string NotationConverter::infixToPostfix(std::string inStr) {
                 postfix += operators.back();
                 operators.eraseBack();
             }
-            operators.eraseBack(); // Remove the '('
+            operators.eraseBack();
         }
     }
+
     while (!operators.isEmpty()) {
         postfix += operators.back();
         operators.eraseBack();
     }
+
     return postfix;
 }
 
-// Convert Postfix notation to Prefix notation.
 std::string NotationConverter::postfixToPrefix(std::string inStr) {
     Deque<std::string> stack;
     for (char &ch : inStr) {
         if (isLetter(ch)) {
-            std::string temp(1, ch);
-            stack.insertBack(temp);
+            stack.insertBack(std::string(1, ch));
         }
         else if (isOperator(ch)) {
             std::string op2 = stack.back();
             stack.eraseBack();
             std::string op1 = stack.back();
             stack.eraseBack();
-            std::string combined = ch + op1 + op2;
-            stack.insertBack(combined);
+            stack.insertBack(std::string(1, ch) + " " + op1 + " " + op2);
         }
     }
     return stack.back();
 }
 
-// Convert Infix notation to Prefix notation.
 std::string NotationConverter::infixToPrefix(std::string inStr) {
-    std::reverse(
-        inStr.begin(),
-        inStr.end()); // reverse the string to simulate prefix operations
+    std::reverse(inStr.begin(), inStr.end());
 
     for (char &ch : inStr) {
         if (ch == '(')
@@ -135,51 +122,42 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
     }
 
     std::string postfix = infixToPostfix(inStr);
-
     std::reverse(postfix.begin(), postfix.end());
 
     return postfixToPrefix(postfix);
 }
 
-// Convert Prefix notation to Infix notation.
 std::string NotationConverter::prefixToInfix(std::string inStr) {
-    // Similar to postfixToInfix, but you process operators before operands.
     Deque<std::string> stack;
     for (auto it = inStr.rbegin(); it != inStr.rend(); ++it) {
         char ch = *it;
         if (isLetter(ch)) {
-            std::string temp(1, ch);
-            stack.insertBack(temp);
+            stack.insertBack(std::string(1, ch));
         }
         else if (isOperator(ch)) {
             std::string op1 = stack.back();
             stack.eraseBack();
             std::string op2 = stack.back();
             stack.eraseBack();
-            std::string combined = "(" + op1 + ch + op2 + ")";
-            stack.insertBack(combined);
+            stack.insertBack("(" + op1 + " " + ch + " " + op2 + ")");
         }
     }
     return stack.back();
 }
 
-// Convert Prefix notation to Postfix notation.
 std::string NotationConverter::prefixToPostfix(std::string inStr) {
-    // Similar to postfixToPrefix, but you process operators before operands.
     Deque<std::string> stack;
     for (auto it = inStr.rbegin(); it != inStr.rend(); ++it) {
         char ch = *it;
         if (isLetter(ch)) {
-            std::string temp(1, ch);
-            stack.insertBack(temp);
+            stack.insertBack(std::string(1, ch));
         }
         else if (isOperator(ch)) {
             std::string op1 = stack.back();
             stack.eraseBack();
             std::string op2 = stack.back();
             stack.eraseBack();
-            std::string combined = op1 + op2 + ch;
-            stack.insertBack(combined);
+            stack.insertBack(op1 + " " + op2 + " " + ch);
         }
     }
     return stack.back();
