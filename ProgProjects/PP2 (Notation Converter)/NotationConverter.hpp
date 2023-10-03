@@ -48,12 +48,12 @@ private:
 
             std::size_t number_of_nodes;
             // Sentinel Node:
-            DoubleNode *sentinel = nullptr;
+            DoubleNode *sentinel = new DoubleNode;
 
         public:
             DoubleList() {
                 // Create an object of DoubleNode:
-                this->sentinel = new DoubleNode;
+                // this->sentinel = new DoubleNode;
                 // Point next and prev to the sentinel node:
                 this->sentinel->next = this->sentinel;
                 this->sentinel->prev = this->sentinel;
