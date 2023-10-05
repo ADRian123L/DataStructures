@@ -5,6 +5,10 @@
 #include <stdexcept>
 #include <string>
 
+#define WHITE_SPACE ' '
+#define OPENING_PAREN '('
+#define CLOSING_PAREN ')'
+
 class NotationConverter : public NotationConverterInterface {
 public:
     std::string postfixToInfix(std::string inStr) override;
@@ -13,6 +17,14 @@ public:
     std::string infixToPrefix(std::string inStr) override;
     std::string prefixToInfix(std::string inStr) override;
     std::string prefixToPostfix(std::string inStr) override;
+
+    // Helper functions:
+    bool isLetter(char letter) const;
+    bool isOperator(char oper) const;
+    int  precedence_out(char oper) const;
+    int  precedence_in(char oper) const;
+    void reverse_infix(std::string::iterator begin,
+                       std::string::iterator end) const;
 
 private:
     template <typename T>
@@ -89,7 +101,8 @@ private:
             }
 
             void popBack() {
-                if (isEmpty()) throw std::runtime_error("The list is empty");
+                if (isEmpty())
+                    throw std::runtime_error("The list is empty");
                 DoubleNode *toDelete = sentinel->prev;
                 sentinel->prev       = toDelete->prev;
                 toDelete->prev->next = sentinel;
@@ -98,7 +111,8 @@ private:
             }
 
             void popFront() {
-                if (isEmpty()) throw std::runtime_error("The list is empty");
+                if (isEmpty())
+                    throw std::runtime_error("The list is empty");
                 DoubleNode *toDelete = sentinel->next;
                 sentinel->next       = toDelete->next;
                 toDelete->next->prev = sentinel;

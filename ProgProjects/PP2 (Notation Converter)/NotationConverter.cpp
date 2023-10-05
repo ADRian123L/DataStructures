@@ -1,18 +1,22 @@
 #include "NotationConverter.hpp"
 #include <algorithm>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
-bool isLetter(char letter) {
+bool NotationConverter::isLetter(char letter) const {
     return (letter >= 'a' && letter <= 'z') || (letter >= 'A' && letter <= 'Z');
 }
 
-bool isOperator(char oper) {
-    return oper == '+' || oper == '-' || oper == '*' || oper == '/';
+bool NotationConverter::isOperator(char oper) const {
+    return oper == '+' || oper == '-' || oper == '*' || oper == '/' ||
+           oper == '(' || oper == ')';
 }
 
-int precedence_out(char oper) {
+int NotationConverter::precedence_out(char oper) const {
     switch (oper) {
+    case ')':
+        return 0;
     case '+':
     case '-':
         return 1;
@@ -26,7 +30,7 @@ int precedence_out(char oper) {
     }
 }
 
-int precedence_in(char oper) {
+int NotationConverter::precedence_in(char oper) const {
     switch (oper) {
     case '+':
     case '-':
@@ -41,124 +45,174 @@ int precedence_in(char oper) {
     }
 }
 
+#include <iostream>
+void NotationConverter::reverse_infix(std::string::iterator begin,
+                                      std::string::iterator end) const {
+    while (begin < end) {
+        std::swap(begin, end);
+        ++begin;
+        --end;
+    }
+}
+
 std::string NotationConverter::postfixToInfix(std::string inStr) {
     Deque<std::string> stack;
-    for (char &ch : inStr) {
-        if (isLetter(ch)) {
-            stack.insertBack(std::string(1, ch));
+    // Conversion:
+    std::string::iterator ptr = inStr.begin();
+    while (ptr != inStr.end()) {
+        if (isLetter(*ptr)) {
+            stack.insertFront(std::string(1, *ptr));
+            ++ptr;
         }
-        else if (isOperator(ch)) {
-            std::string op2 = stack.back();
-            stack.eraseBack();
-            std::string op1 = stack.back();
-            stack.eraseBack();
-            stack.insertBack("(" + op1 + " " + ch + " " + op2 + ")");
+        else if (isOperator(*ptr)) {
+            if (stack.size() < 2) {
+                throw std::runtime_error("Invalid input 1");
+            }
+            else {
+                std::stringstream term;
+                std::string       front = stack.front();
+                stack.eraseFront();
+                std::string back = stack.front();
+                stack.eraseFront();
+                term << OPENING_PAREN;
+                term << back;
+                term << WHITE_SPACE;
+                term << *ptr;
+                term << WHITE_SPACE;
+                term << front;
+                term << CLOSING_PAREN;
+                stack.insertFront(term.str());
+                ++ptr;
+            }
+        }
+        else if (*ptr == WHITE_SPACE) {
+            ++ptr;
+            continue;
+        }
+        else {
+            throw std::runtime_error("Invalid input 2");
         }
     }
-    return stack.back();
+    return stack.front();
 }
 
 std::string NotationConverter::infixToPostfix(std::string inStr) {
-    Deque<char> operators;
+    Deque<char> stack;
     std::string postfix;
-
-    for (char &ch : inStr) {
-        if (isLetter(ch)) {
-            postfix += ch;
+    // Conversion:
+    std::string::iterator ptr = inStr.begin();
+    while (ptr != inStr.end()) {
+        if (isLetter(*ptr)) {
+            postfix.push_back(*ptr); // Push all letters into the string
+            postfix.push_back(WHITE_SPACE);
+            ++ptr;
         }
-        else if (isOperator(ch)) {
-            while (!operators.isEmpty() &&
-                   precedence_out(ch) <= precedence_in(operators.back())) {
-                postfix += operators.back();
-                operators.eraseBack();
+        else if (isOperator(*ptr)) {
+            if (stack.isEmpty()) {
+                stack.insertFront(*ptr); // Push the operator into the stack
+                                         // if the stack is empty
+                ++ptr;
             }
-            operators.insertBack(ch);
-        }
-        else if (ch == '(') {
-            operators.insertBack(ch);
-        }
-        else if (ch == ')') {
-            while (operators.back() != '(') {
-                postfix += operators.back();
-                operators.eraseBack();
+            else if (precedence_in(stack.front()) <= precedence_out(*ptr)) {
+                if (*ptr == CLOSING_PAREN && stack.front() == OPENING_PAREN) {
+                    stack.eraseFront();
+                    ++ptr;
+                    continue;
+                }
+                else if (*ptr == CLOSING_PAREN) {
+                    throw std::runtime_error("Invalid input 1");
+                }
+                stack.insertFront(
+                    *ptr); // If the precedence of the operand being checked
+                           // is higher than the one at the top of the
+                           // stack, the operand is pushed into the stack.
+                ++ptr;
             }
-            operators.eraseBack();
+            else {
+                postfix.push_back(
+                    stack.front()); // Push the operator to the string and
+                                    // pop it from the stack
+                postfix.push_back(WHITE_SPACE);
+                stack.eraseFront();
+            }
+        }
+        else if (*ptr == WHITE_SPACE) {
+            ++ptr;
+            continue;
+        }
+        else {
+            throw std::runtime_error("Invalid input 2");
         }
     }
-
-    while (!operators.isEmpty()) {
-        postfix += operators.back();
-        operators.eraseBack();
+    while (!stack.isEmpty()) {
+        if (precedence_in(stack.front()) ==
+            0) { // Do not push the parenthesis into the string
+            stack.eraseFront();
+            continue;
+        }
+        postfix.push_back(
+            stack.front()); // Push all remaining operators to the string.
+        stack.eraseFront();
+        postfix.push_back(WHITE_SPACE);
     }
-
     return postfix;
 }
 
 std::string NotationConverter::postfixToPrefix(std::string inStr) {
-    Deque<std::string> stack;
-    for (char &ch : inStr) {
-        if (isLetter(ch)) {
-            stack.insertBack(std::string(1, ch));
-        }
-        else if (isOperator(ch)) {
-            std::string op2 = stack.back();
-            stack.eraseBack();
-            std::string op1 = stack.back();
-            stack.eraseBack();
-            stack.insertBack(std::string(1, ch) + " " + op1 + " " + op2);
-        }
-    }
-    return stack.back();
+    std::string answer = postfixToInfix(inStr);
+    answer             = infixToPrefix(answer);
+    return answer;
 }
 
 std::string NotationConverter::infixToPrefix(std::string inStr) {
-    std::reverse(inStr.begin(), inStr.end());
-
-    for (char &ch : inStr) {
-        if (ch == '(')
-            ch = ')';
-        else if (ch == ')')
-            ch = '(';
-    }
-
-    std::string postfix = infixToPostfix(inStr);
-    std::reverse(postfix.begin(), postfix.end());
-
-    return postfixToPrefix(postfix);
+    reverse_infix(inStr.begin(), inStr.end());    // Reverse the string
+    std::string postfix = infixToPostfix(inStr);  // Convert to postfix
+    std::reverse(postfix.begin(), postfix.end()); // Reverse to get prefix
+    return postfix;
 }
 
 std::string NotationConverter::prefixToInfix(std::string inStr) {
     Deque<std::string> stack;
-    for (auto it = inStr.rbegin(); it != inStr.rend(); ++it) {
-        char ch = *it;
-        if (isLetter(ch)) {
-            stack.insertBack(std::string(1, ch));
+    // Conversion:
+    std::string::iterator ptr = inStr.begin();
+    while (ptr != inStr.end()) {
+        if (isLetter(*ptr)) {
+            stack.insertFront(std::string(1, *ptr));
+            ++ptr;
         }
-        else if (isOperator(ch)) {
-            std::string op1 = stack.back();
-            stack.eraseBack();
-            std::string op2 = stack.back();
-            stack.eraseBack();
-            stack.insertBack("(" + op1 + " " + ch + " " + op2 + ")");
+        else if (isOperator(*ptr)) {
+            std::stringstream term;
+            term << OPENING_PAREN;
+            term << stack.front();
+            stack.eraseFront();
+            term << WHITE_SPACE;
+            term << std::string(1, *ptr);
+            term << WHITE_SPACE;
+            term << stack.front();
+            stack.eraseFront();
+            term << CLOSING_PAREN;
+            stack.insertFront(term.str());
+        }
+        else if (*ptr == WHITE_SPACE) {
+            ++ptr;
+            continue;
+        }
+        else {
+            throw std::runtime_error("Invalid input");
         }
     }
-    return stack.back();
+    return stack.front();
 }
 
 std::string NotationConverter::prefixToPostfix(std::string inStr) {
-    Deque<std::string> stack;
-    for (auto it = inStr.rbegin(); it != inStr.rend(); ++it) {
-        char ch = *it;
-        if (isLetter(ch)) {
-            stack.insertBack(std::string(1, ch));
-        }
-        else if (isOperator(ch)) {
-            std::string op1 = stack.back();
-            stack.eraseBack();
-            std::string op2 = stack.back();
-            stack.eraseBack();
-            stack.insertBack(op1 + " " + op2 + " " + ch);
-        }
-    }
-    return stack.back();
+    std::string answer = prefixToInfix(inStr);
+    answer             = infixToPostfix(answer);
+    return answer;
+}
+
+#include <iostream>
+int main() {
+    NotationConverter test;
+    std::cout << test.postfixToPrefix("c d / a b * r r * / *") << std::endl;
+    return EXIT_SUCCESS;
 }
