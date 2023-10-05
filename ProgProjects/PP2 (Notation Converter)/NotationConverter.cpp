@@ -45,11 +45,19 @@ int NotationConverter::precedence_in(char oper) const {
     }
 }
 
-#include <iostream>
 void NotationConverter::reverse_infix(std::string::iterator begin,
                                       std::string::iterator end) const {
+    --end;
     while (begin < end) {
-        std::swap(begin, end);
+        if (*begin == OPENING_PAREN)
+            *begin = CLOSING_PAREN;
+        else if (*begin == CLOSING_PAREN)
+            *begin = OPENING_PAREN;
+        if (*end == OPENING_PAREN)
+            *end = CLOSING_PAREN;
+        else if (*end == CLOSING_PAREN)
+            *end = OPENING_PAREN;
+        std::swap(*begin, *end);
         ++begin;
         --end;
     }
@@ -165,14 +173,15 @@ std::string NotationConverter::postfixToPrefix(std::string inStr) {
 }
 
 std::string NotationConverter::infixToPrefix(std::string inStr) {
-    reverse_infix(inStr.begin(), inStr.end());    // Reverse the string
-    std::string postfix = infixToPostfix(inStr);  // Convert to postfix
-    std::reverse(postfix.begin(), postfix.end()); // Reverse to get prefix
+    reverse_infix(inStr.begin(), inStr.end());     // Reverse the string
+    std::string postfix = infixToPostfix(inStr);   // Convert to postfix
+    reverse_infix(postfix.begin(), postfix.end()); // Reverse to get prefix
     return postfix;
 }
 
 std::string NotationConverter::prefixToInfix(std::string inStr) {
     Deque<std::string> stack;
+    reverse_infix(inStr.begin(), inStr.end());
     // Conversion:
     std::string::iterator ptr = inStr.begin();
     while (ptr != inStr.end()) {
@@ -192,6 +201,7 @@ std::string NotationConverter::prefixToInfix(std::string inStr) {
             stack.eraseFront();
             term << CLOSING_PAREN;
             stack.insertFront(term.str());
+            ++ptr;
         }
         else if (*ptr == WHITE_SPACE) {
             ++ptr;
@@ -208,11 +218,4 @@ std::string NotationConverter::prefixToPostfix(std::string inStr) {
     std::string answer = prefixToInfix(inStr);
     answer             = infixToPostfix(answer);
     return answer;
-}
-
-#include <iostream>
-int main() {
-    NotationConverter test;
-    std::cout << test.postfixToPrefix("c d / a b * r r * / *") << std::endl;
-    return EXIT_SUCCESS;
 }

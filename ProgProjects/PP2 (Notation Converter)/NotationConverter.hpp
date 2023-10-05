@@ -73,7 +73,7 @@ private:
             std::size_t size() const { return number_of_nodes; }
             const T    &getNode(std::size_t index) const {
                 if (index >= size()) {
-                    throw std::out_of_range("Index out of range");
+                    throw std::out_of_range("Index out of range 1");
                 }
                 DoubleNode *ptr = sentinel->next;
                 for (std::size_t i = 0; i < index; ++i) {
@@ -102,7 +102,7 @@ private:
 
             void popBack() {
                 if (isEmpty())
-                    throw std::runtime_error("The list is empty");
+                    throw std::runtime_error("The list is empty 1");
                 DoubleNode *toDelete = sentinel->prev;
                 sentinel->prev       = toDelete->prev;
                 toDelete->prev->next = sentinel;
@@ -112,7 +112,7 @@ private:
 
             void popFront() {
                 if (isEmpty())
-                    throw std::runtime_error("The list is empty");
+                    throw std::runtime_error("The list is empty 2");
                 DoubleNode *toDelete = sentinel->next;
                 sentinel->next       = toDelete->next;
                 toDelete->next->prev = sentinel;
@@ -122,7 +122,7 @@ private:
 
             void insert(std::size_t index, const T &value) {
                 if (index > size()) {
-                    throw std::out_of_range("The index is out of range");
+                    throw std::out_of_range("The index is out of range 2");
                 }
                 if (index == 0) {
                     pushFront(value);
@@ -145,7 +145,7 @@ private:
 
             void setVal(std::size_t index, T value) {
                 if (index >= size()) {
-                    throw std::out_of_range("Index out of range");
+                    throw std::out_of_range("Index out of range 3");
                 }
                 DoubleNode *ptr = sentinel->next;
                 for (std::size_t i = 0; i < index; ++i) {
