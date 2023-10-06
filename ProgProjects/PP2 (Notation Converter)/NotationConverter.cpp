@@ -61,6 +61,10 @@ void NotationConverter::reverse_infix(std::string::iterator begin,
         ++begin;
         --end;
     }
+    if (*begin == CLOSING_PAREN)
+        *begin = OPENING_PAREN;
+    else if (*begin == OPENING_PAREN)
+        *begin = CLOSING_PAREN;
 }
 
 std::string NotationConverter::postfixToInfix(std::string inStr) {
