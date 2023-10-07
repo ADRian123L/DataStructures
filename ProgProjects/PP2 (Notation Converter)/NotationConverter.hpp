@@ -1,3 +1,11 @@
+
+/*****************************************************************************
+ *                        NotationConverter                               *
+ *****************************************************************************
+ * Author    : Adrian Lozada *
+ * Course    : Data Structures *
+ ****************************************************************************/
+
 #ifndef NOTATIONCONVERTER_H
 #define NOTATIONCONVERTER_H
 
@@ -6,7 +14,7 @@
 #include <stdexcept>
 #include <string>
 
-#define WHITE_SPACE ' '
+#define WHITE_SPACE ' ' // Macros for the functions:
 #define OPENING_PAREN '('
 #define CLOSING_PAREN ')'
 
