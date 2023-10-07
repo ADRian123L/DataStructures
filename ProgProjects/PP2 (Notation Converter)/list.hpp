@@ -1,7 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 template <typename T>
