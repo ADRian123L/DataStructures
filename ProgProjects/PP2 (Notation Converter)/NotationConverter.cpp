@@ -1,5 +1,4 @@
 #include "NotationConverter.hpp"
-#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <string>
