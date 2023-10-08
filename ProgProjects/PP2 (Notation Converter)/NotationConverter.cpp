@@ -76,7 +76,7 @@ std::string NotationConverter::postfixToInfix(std::string inStr) {
     // Conversion:
     std::string::iterator ptr = inStr.begin();
     // Iterate over the string:
-    while (ptr != inStr.end()) {
+    while (ptr != inStr.end() + 1) {
         if (isLetter(*ptr)) { // Pushes all letters into the stack
             stack.insertFront(std::string(1, *ptr));
             ++ptr;
@@ -232,3 +232,5 @@ std::string NotationConverter::prefixToPostfix(std::string inStr) {
     answer             = infixToPostfix(answer); // Convert the it into postfix
     return answer;
 }
+
+
