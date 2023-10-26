@@ -1,15 +1,57 @@
 #include "HuffmanTree.hpp"
+#include "TestStrings.hpp"
 
 HuffmanTree::~HuffmanTree() {}
 
 std::string HuffmanTree::serializeTree() const {
-    std::string answer;
-    return answer;
+    return HuffTable(ptr_to_tree);
 }
 
 std::string HuffmanTree::decompress(const std::string inputCode,
                                     const std::string serializedTree) {
+    std::string          answer;
+    stack<HuffmanNode *> st; // Stack to store the node
+    for (std::string::const_iterator ptr = serializedTree.cbegin();
+         ptr != serializedTree.cend();
+         ++ptr) {
+        if (*ptr == LEAF) {
+            HuffmanNode *tmp_ptr = new HuffmanNode(*(++ptr), size_t());
+            st.push(tmp_ptr);
+        }
+        else if (*ptr == BRANCH) {
+            HuffmanNode *ptr_to_second = st.get();
+            st.pop();
+            HuffmanNode *ptr_to_first = st.get();
+            st.pop();
+            HuffmanNode *tmp_ptr = new HuffmanNode(
+                char(), size_t(), nullptr, ptr_to_first, ptr_to_second);
+            ptr_to_first->parent = ptr_to_second->parent = tmp_ptr;
+            st.push(tmp_ptr);
+        }
+    }
+    std::string map[128];
+    HuffS(st.get(), map); // Create a map with the encodings
+    // Decompress the string:
+    std::string codings;
+    for (auto &ptr : inputCode) {
+        codings.push_back(ptr);
+        std::string tmp = HuffConvert(codings, map);
+        if (!tmp.empty()) {
+            answer += tmp;
+            codings.clear();
+        }
+    }
+    return answer;
+}
+
+std::string HuffmanTree::HuffConvert(std::string &code,
+                                     std::string *map) const {
     std::string answer;
+    for (std::size_t i = 0; i < 128; ++i) {
+        if (code == map[i]) {
+            answer.push_back(static_cast<char>(i));
+        }
+    }
     return answer;
 }
 
@@ -47,29 +89,46 @@ std::string HuffmanTree::compress(const std::string inputStr) {
     ptr_to_tree = que.min();
     que.removeMin();
     // Create the Huffman code:
-    std::cout << HuffTable(*ptr_to_tree);
+    std::string table[128];
+    HuffS(ptr_to_tree, table);
+    for (auto &i : inputStr) {
+        compressed_hoff_code += table[static_cast<int>(i)];
+    }
     return compressed_hoff_code;
 }
 
-std::string HuffmanTree::HuffTable(HuffmanNode const &node) const {
+void HuffmanTree::HuffS(HuffmanNode *node, std::string *h_map) const {
     static std::string answer;
-    if (node.isLeaf()) {
-        answer.push_back(node.getCharacter());
-        return answer;
+    if (node->isLeaf()) {
+        h_map[static_cast<int>(node->getCharacter())] = answer;
+        return;
     }
-    if (node.left != nullptr) {
-        answer.push_back('L');
-        HuffTable(*node.left);
+    if (node->left) {
+        answer.push_back(ZERO);
+        HuffS(node->left, h_map);
+        answer.pop_back();
     }
-    if (node.right != nullptr) {
-        answer.push_back('R');
-        HuffTable(*node.right);
+    if (node->right) {
+        answer.push_back(ONE);
+        HuffS(node->right, h_map);
+        answer.pop_back();
     }
-    return answer;
 }
 
-int main() {
-    HuffmanTree t;
-    t.compress("Hello There Are you?AA");
-    return EXIT_SUCCESS;
+std::string HuffmanTree::HuffTable(HuffmanNode *node) const {
+    static std::string answer;
+    if (node->left != nullptr) {
+        HuffTable(node->left);
+    }
+    if (node->right != nullptr) {
+        HuffTable(node->right);
+    }
+    if (node->isLeaf()) {
+        answer.push_back(LEAF);
+        answer.push_back(node->getCharacter());
+    }
+    else {
+        answer.push_back(BRANCH);
+    }
+    return answer;
 }

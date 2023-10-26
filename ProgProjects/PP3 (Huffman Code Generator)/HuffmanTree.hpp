@@ -3,7 +3,13 @@
 
 #include "HeapQueue.hpp"
 #include "HuffmanBase.hpp"
+#include "stack.hpp"
 #include <string>
+
+#define ONE '1'
+#define ZERO '0'
+#define LEAF 'L'
+#define BRANCH 'B'
 
 class HuffmanTree : public HuffmanTreeBase {
 public:
@@ -17,7 +23,9 @@ public:
                            const std::string serializedTree) override;
 
     // Helper functions:
-    std::string HuffTable(HuffmanNode const &node) const;
+    std::string HuffTable(HuffmanNode *node) const;
+    void        HuffS(HuffmanNode *node, std::string *h_map) const;
+    std::string HuffConvert(std::string &code, std::string *map) const;
 
 private:
     HuffmanNode *ptr_to_tree; // It points to the tree
