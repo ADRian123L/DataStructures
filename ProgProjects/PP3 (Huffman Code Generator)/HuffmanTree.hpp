@@ -3,6 +3,7 @@
 
 #include "HeapQueue.hpp"
 #include "HuffmanBase.hpp"
+#include "TestStrings.hpp"
 #include "stack.hpp"
 #include <string>
 
@@ -23,7 +24,7 @@ public:
                            const std::string serializedTree) override;
 
     // Helper functions:
-    std::string HuffTable(HuffmanNode *node) const;
+    void        HuffTable(HuffmanNode *node, std::string &answer) const;
     void        HuffS(HuffmanNode *node, std::string *h_map) const;
     std::string HuffConvert(std::string &code, std::string *map) const;
 

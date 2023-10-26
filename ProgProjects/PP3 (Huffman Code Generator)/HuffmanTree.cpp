@@ -1,10 +1,11 @@
 #include "HuffmanTree.hpp"
-#include "TestStrings.hpp"
 
 HuffmanTree::~HuffmanTree() {}
 
 std::string HuffmanTree::serializeTree() const {
-    return HuffTable(ptr_to_tree);
+    std::string answer;
+    HuffTable(ptr_to_tree, answer);
+    return answer;
 }
 
 std::string HuffmanTree::decompress(const std::string inputCode,
@@ -115,13 +116,12 @@ void HuffmanTree::HuffS(HuffmanNode *node, std::string *h_map) const {
     }
 }
 
-std::string HuffmanTree::HuffTable(HuffmanNode *node) const {
-    static std::string answer;
+void HuffmanTree::HuffTable(HuffmanNode *node, std::string &answer) const {
     if (node->left != nullptr) {
-        HuffTable(node->left);
+        HuffTable(node->left, answer);
     }
     if (node->right != nullptr) {
-        HuffTable(node->right);
+        HuffTable(node->right, answer);
     }
     if (node->isLeaf()) {
         answer.push_back(LEAF);
@@ -130,5 +130,5 @@ std::string HuffmanTree::HuffTable(HuffmanNode *node) const {
     else {
         answer.push_back(BRANCH);
     }
-    return answer;
+    return;
 }
