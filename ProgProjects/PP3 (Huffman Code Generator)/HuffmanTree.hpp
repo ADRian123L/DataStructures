@@ -3,7 +3,6 @@
 
 #include "HeapQueue.hpp"
 #include "HuffmanBase.hpp"
-#include "TestStrings.hpp"
 #include "stack.hpp"
 #include <string>
 
