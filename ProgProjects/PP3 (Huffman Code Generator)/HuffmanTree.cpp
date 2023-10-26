@@ -1,10 +1,19 @@
 #include "HuffmanTree.hpp"
 
-HuffmanTree::~HuffmanTree() {}
+HuffmanTree::~HuffmanTree() { erase(ptr_to_tree); }
+
+void HuffmanTree::erase(HuffmanNode *node) { // Deletes the tree
+    if (node == nullptr) {
+        return;
+    }
+    erase(node->left);
+    erase(node->right);
+    delete node;
+}
 
 std::string HuffmanTree::serializeTree() const {
     std::string answer;
-    HuffTable(ptr_to_tree, answer);
+    HuffTable(ptr_to_tree, answer); // The rec function returns the serial
     return answer;
 }
 
@@ -12,6 +21,7 @@ std::string HuffmanTree::decompress(const std::string inputCode,
                                     const std::string serializedTree) {
     std::string          answer;
     stack<HuffmanNode *> st; // Stack to store the node
+    // Build the tree:
     for (std::string::const_iterator ptr = serializedTree.cbegin();
          ptr != serializedTree.cend();
          ++ptr) {
@@ -30,16 +40,18 @@ std::string HuffmanTree::decompress(const std::string inputCode,
             st.push(tmp_ptr);
         }
     }
+    // Map the coding into a hash map:
     std::string map[128];
     HuffS(st.get(), map); // Create a map with the encodings
     // Decompress the string:
-    std::string codings;
+    std::string coding;
     for (auto &ptr : inputCode) {
-        codings.push_back(ptr);
-        std::string tmp = HuffConvert(codings, map);
+        coding.push_back(ptr);
+        std::string tmp =
+            HuffConvert(coding, map); // Check if coding is in the map
         if (!tmp.empty()) {
             answer += tmp;
-            codings.clear();
+            coding.clear();
         }
     }
     return answer;
@@ -58,7 +70,7 @@ std::string HuffmanTree::HuffConvert(std::string &code,
 
 std::string HuffmanTree::compress(const std::string inputStr) {
     std::string compressed_hoff_code;
-    size_t      char_frequencies[128]{0}; // Hash map
+    size_t      char_frequencies[128]{0}; // Hash map for the frequencies
     // Count the frequency of each letter:
     for (auto &ptr : inputStr) {
         ++char_frequencies[static_cast<int>(ptr)];
@@ -91,7 +103,7 @@ std::string HuffmanTree::compress(const std::string inputStr) {
     que.removeMin();
     // Create the Huffman code:
     std::string table[128];
-    HuffS(ptr_to_tree, table);
+    HuffS(ptr_to_tree, table); // Write the codes into the hash map
     for (auto &i : inputStr) {
         compressed_hoff_code += table[static_cast<int>(i)];
     }
@@ -130,5 +142,4 @@ void HuffmanTree::HuffTable(HuffmanNode *node, std::string &answer) const {
     else {
         answer.push_back(BRANCH);
     }
-    return;
 }

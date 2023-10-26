@@ -26,6 +26,7 @@ public:
     void        HuffTable(HuffmanNode *node, std::string &answer) const;
     void        HuffS(HuffmanNode *node, std::string *h_map) const;
     std::string HuffConvert(std::string &code, std::string *map) const;
+    void        erase(HuffmanNode *);
 
 private:
     HuffmanNode *ptr_to_tree; // It points to the tree
