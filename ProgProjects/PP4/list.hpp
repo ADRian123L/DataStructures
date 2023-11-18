@@ -85,10 +85,10 @@ public:
     }
 
     void pushFront(const T &value) {
-        DoubleNode<T> *new_node =
-            new DoubleNode<T>(value,
-                           sentinel->next,
-                           sentinel); // Initialize the node and set the values
+        DoubleNode<T> *new_node = new DoubleNode<T>(
+            value,
+            sentinel->next,
+            sentinel); // Initialize the node and set the values
 
         sentinel->next->prev = new_node;
         sentinel->next       = new_node;
@@ -160,6 +160,7 @@ public:
             ptr->prev->next = ptr->next;
 
             delete ptr;
+            --number_of_nodes;
         }
     }
 };

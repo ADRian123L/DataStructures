@@ -3,8 +3,13 @@
 Graph::Graph() {}
 
 Graph::~Graph() {
-    for (auto &ptr : vertices) {
-        delete ptr;
+    for (std::vector<vert *>::iterator ptr = vertices.begin();
+         ptr != vertices.end();
+         ++ptr) {
+        if (*ptr != nullptr) {
+            delete *ptr;
+            *ptr = nullptr;
+        }
     }
 }
 
@@ -16,15 +21,20 @@ void Graph::addVertex(std::string label) {
 
 void Graph::removeVertex(std::string label) {
     vert *ptr_label = lmap.at(label);
-
     for (DoubleList<edge *>::Iterator ptr = ptr_label->edges.begin();
          ptr != ptr_label->edges.end();
          ++ptr) {
         (*ptr)->label_ptr->edges.deleteNode(label);
     }
+    for (auto &a : vertices) {
+        if (a == ptr_label) {
+            std::swap(a, *(vertices.end() - 1));
+            vertices.pop_back();
+        }
+    }
     delete ptr_label;
-    std::swap(*vertices.begin(), *(vertices.end() - 1));
-    vertices.pop_back();
+    ptr_label = nullptr;
+    lmap.erase(label);
 }
 
 void Graph::addEdge(std::string   label1,
@@ -114,6 +124,14 @@ void Graph::print() const {
             }
         }
     }
+    for (auto &a : vertices) {
+        if (a == nullptr) {
+            std::cout << "nullptr!!" << std::endl;
+        }
+        else {
+            std::cout << a->label << std::endl;
+        }
+    }
 }
 
 void Graph::reset() {
@@ -123,7 +141,6 @@ void Graph::reset() {
         ptr->predecessor = nullptr;
     }
 }
-
 /*
 int main() {
     Graph g;
@@ -150,19 +167,52 @@ int main() {
          {"4", "5", 6},
          {"5", "6", 9},
     };
+    std::vector<std::string> vertices3{
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
+    std::vector<EdgeStruct> edges3{{"0", "1", 1},
+                                   {"0", "4", 1},
+                                   {"1", "2", 2},
+                                   {"1", "5", 2},
+                                   {"2", "6", 1},
+                                   {"2", "3", 1},
+                                   {"3", "7", 2},
+                                   {"4", "8", 2},
+                                   {"5", "6", 1},
+                                   {"5", "10", 4},
+                                   {"6", "11", 2},
+                                   {"7", "12", 1},
+                                   {"8", "9", 3},
+                                   {"9", "10", 1},
+                                   {"10", "11", 2},
+                                   {"11", "12", 5}};
     // Adding the new set of edges
-    for (const auto &label : vertices1)
+    for (const auto &label : vertices3)
         g.addVertex(label);
-    for (const auto &e : edges1)
+    for (const auto &e : edges3)
         g.addEdge(e.a, e.b, e.w);
 
+    g.shortestPath("1", "12", gpath);
+
     std::cout << std::endl;
-    std::cout << std::endl << g.shortestPath("1", "5", gpath) << std::endl;
-    g.print();
+    for (auto a : gpath) {
+        std::cout << a << ", " << std::flush;
+    }
+    std::cout << std::endl;
+    g.shortestPath("3", "11", gpath);
+
+    std::cout << std::endl;
+    for (auto a : gpath) {
+        std::cout << a << ", " << std::flush;
+    }
+    std::cout << std::endl;
+    g.removeVertex("3");
+    g.shortestPath("8", "7", gpath);
+
+    std::cout << std::endl;
     for (auto a : gpath) {
         std::cout << a << ", " << std::flush;
     }
     std::cout << std::endl;
     return EXIT_SUCCESS;
 }
-*/
+/*
