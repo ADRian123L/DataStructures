@@ -6,6 +6,7 @@
 #include "list.hpp"
 #include <algorithm>
 #include <iostream>
+#include <limits.h>
 #include <map>
 
 struct vert; // Struct declaration

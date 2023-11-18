@@ -1,7 +1,6 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -24,8 +23,8 @@ private:
 
 public:
     DoubleList() : number_of_nodes(0) {
-        sentinel       = new DoubleNode(T()); // Initialized with default value.
-        sentinel->next = sentinel;            // Point the node to itself
+        sentinel = new DoubleNode<T>(T()); // Initialized with default value.
+        sentinel->next = sentinel;         // Point the node to itself
         sentinel->prev = sentinel;
     }
 
@@ -154,7 +153,6 @@ public:
     void deleteNode(std::string val) {
         DoubleNode<T> *ptr = sentinel->next;
         while (ptr != sentinel && ptr->val->label_ptr->label != val) {
-            std::cout << ptr->val->label_ptr->label << std::endl;
             ptr = ptr->next;
         }
         if (ptr != sentinel) {
