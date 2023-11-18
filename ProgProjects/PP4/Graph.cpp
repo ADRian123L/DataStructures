@@ -1,5 +1,13 @@
 #include "Graph.hpp"
 
+Graph::Graph() {}
+
+Graph::~Graph() {
+    for (auto &ptr : vertices) {
+        delete ptr;
+    }
+}
+
 void Graph::addVertex(std::string label) {
     vert *new_vert = new vert(label);
     vertices.push_back(new_vert);
@@ -79,6 +87,10 @@ unsigned long Graph::shortestPath(std::string               startLabel,
     }
     std::reverse(path.begin(), path.end());
     path.resize(counter);
+
+    // Reset the values:
+    reset();
+
     return distance;
 }
 
@@ -103,6 +115,13 @@ void Graph::print() const {
     }
 }
 
+void Graph::reset() {
+    for (auto &ptr : vertices) {
+        ptr->visited     = false;
+        ptr->distance    = ULONG_MAX;
+        ptr->predecessor = nullptr;
+    }
+}
 /*
 int main() {
     Graph g;

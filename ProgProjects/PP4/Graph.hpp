@@ -29,6 +29,8 @@ struct vert {
 
 class Graph : public GraphBase {
 public:
+    Graph();
+    ~Graph();
     void          addVertex(std::string label) override;
     void          removeVertex(std::string label) override;
     void          addEdge(std::string   label1,
@@ -41,6 +43,7 @@ public:
 
     // Helper functions:
     void print() const;
+    void reset();
 
 private:
     std::vector<vert *>           vertices;
