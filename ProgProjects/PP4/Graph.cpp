@@ -70,11 +70,11 @@ unsigned long Graph::shortestPath(std::string               startLabel,
                 (*ptr)->weight + ptr_start->distance) {
                 (*ptr)->label_ptr->distance =
                     (*ptr)->weight + ptr_start->distance;
+                (*ptr)->label_ptr->predecessor = ptr_start;
             }
             if ((*ptr)->label_ptr->visited == false) {
                 Heap.insert((*ptr)->label_ptr);
-                (*ptr)->label_ptr->visited     = true;
-                (*ptr)->label_ptr->predecessor = ptr_start;
+                (*ptr)->label_ptr->visited = true;
             }
         }
     }
@@ -99,6 +99,7 @@ void Graph::print() const {
          ptrV != vertices.end();
          ptrV++) {
         if ((*ptrV)->visited) {
+            std::cout << std::endl;
             std::cout << (*ptrV)->label << std::endl;
             std::cout << " ---- Distance: " << (*ptrV)->distance << std::endl;
 
@@ -122,6 +123,7 @@ void Graph::reset() {
         ptr->predecessor = nullptr;
     }
 }
+
 /*
 int main() {
     Graph g;
@@ -130,56 +132,32 @@ int main() {
         g.addVertex(s);
     }
     std::vector<std::string> gpath;
+    struct EdgeStruct {
+        std::string   a;
+        std::string   b;
+        unsigned long w;
+    };
 
+    std::vector<std::string> vertices1{"1", "2", "3", "4", "5", "6"};
+    std::vector<EdgeStruct>  edges1{
+         {"1", "2", 7},
+         {"1", "3", 9},
+         {"1", "6", 14},
+         {"2", "3", 10},
+         {"2", "4", 15},
+         {"3", "4", 11},
+         {"3", "6", 2},
+         {"4", "5", 6},
+         {"5", "6", 9},
+    };
     // Adding the new set of edges
-    g.addEdge("a", "b", 10);
-    g.addEdge("a", "y", 23);
-    g.addEdge("a", "x", 7);
-    g.addEdge("x", "w", 2);
-    g.addEdge("y", "x", 23);
-    g.addEdge("b", "e", 4);
-    g.addEdge("e", "w", 13);
-    g.addEdge("w", "z", 23);
-    g.addEdge("b", "c", 5);
-    g.addEdge("c", "d", 3);
-    g.addEdge("d", "e", 9);
-    g.addEdge("y", "v", 12);
-    g.addEdge("v", "u", 8);
-    g.addEdge("u", "t", 7);
-    g.addEdge("t", "s", 6);
-    g.addEdge("s", "r", 5);
-    g.addEdge("r", "q", 4);
-    g.addEdge("a", "d", 15);
-    g.addEdge("b", "f", 12);
-    g.addEdge("c", "h", 11);
-    g.addEdge("d", "j", 9);
-    g.addEdge("e", "l", 8);
-    g.addEdge("f", "n", 7);
-    g.addEdge("g", "p", 6);
-    g.addEdge("h", "r", 5);
-    g.addEdge("i", "t", 4);
-    g.addEdge("j", "v", 3);
-    g.addEdge("k", "x", 2);
-    g.addEdge("l", "z", 1);
-    g.addEdge("m", "y", 2);
-    g.addEdge("n", "w", 3);
-    g.addEdge("o", "u", 4);
-    g.addEdge("p", "s", 5);
-    g.addEdge("q", "q", 6);
-    g.addEdge("r", "o", 7);
-    g.addEdge("s", "m", 8);
-    g.addEdge("t", "k", 9);
-    g.addEdge("u", "i", 10);
-    g.addEdge("v", "g", 11);
-    g.addEdge("w", "e", 12);
-    g.addEdge("x", "c", 13);
-    g.addEdge("y", "a", 14);
-    g.addEdge("z", "b", 15);
-    g.addEdge("a", "z", 23);
-    g.addEdge("a", "a", 1);
+    for (const auto &label : vertices1)
+        g.addVertex(label);
+    for (const auto &e : edges1)
+        g.addEdge(e.a, e.b, e.w);
 
-    std::cout << std::endl
-              << "Distance: " << g.shortestPath("a", "i", gpath) << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl << g.shortestPath("1", "5", gpath) << std::endl;
     g.print();
     for (auto a : gpath) {
         std::cout << a << ", " << std::flush;
