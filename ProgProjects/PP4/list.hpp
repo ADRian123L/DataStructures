@@ -75,7 +75,7 @@ public:
     }
 
     void pushBack(const T &value) {
-        DoubleNode<T> *new_node = new DoubleNode(
+        DoubleNode<T> *new_node = new DoubleNode<T>(
             value,
             sentinel,
             sentinel->prev); // Initialize the node and set the values
@@ -86,7 +86,7 @@ public:
 
     void pushFront(const T &value) {
         DoubleNode<T> *new_node =
-            new DoubleNode(value,
+            new DoubleNode<T>(value,
                            sentinel->next,
                            sentinel); // Initialize the node and set the values
 
@@ -132,7 +132,7 @@ public:
             for (std::size_t i = 0; i < index; ++i) {
                 ptr = ptr->next;
             }
-            DoubleNode<T> *new_node = new DoubleNode(value, ptr, ptr->prev);
+            DoubleNode<T> *new_node = new DoubleNode<T>(value, ptr, ptr->prev);
             ptr->prev->next         = new_node;
             ptr->prev               = new_node;
             number_of_nodes++;
